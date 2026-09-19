@@ -318,7 +318,7 @@ export default function Navbar() {
                 }`}
               >
                 <ShieldCheck className="h-4 w-4 text-amber-600" />
-                Admin Console
+                Admin Dashboard
               </Link>
             )}
           </div>
