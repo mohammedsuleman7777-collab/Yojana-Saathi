@@ -212,7 +212,8 @@ export function checkAllSchemes(profile,schemes) {
     return [];
   }
 
-  return schemes.map((scheme) => {const result =checkEligibility(profile,scheme);
+  return schemes.map((scheme) => {
+    const result =checkEligibility(profile,scheme);
     return {
       ...scheme,
       eligible: result.eligible,

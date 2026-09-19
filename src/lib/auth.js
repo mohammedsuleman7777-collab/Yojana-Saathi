@@ -7,29 +7,17 @@ import { auth,db } from "@/lib/firebase"
 export async function registerUser(name, email, password) {
   try {
 
-
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
+    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
     const user = userCredential.user;
-
-
-
     await updateProfile(user, {
       displayName: name,
     });
 
-
-
     const userRef = doc(db, "users", user.uid);
 
- 
     await setDoc(userRef, {
       uid: user.uid,
-      name,
+      name:user.displayName,
       email: user.email,
       role: "user",
       createdAt: serverTimestamp(),

@@ -66,7 +66,7 @@ export default function RegisterPage() {
             Create Citizen Account
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-slate-600">
-            Register to uncover central and state government schemes tailored for you
+            Register to find central and state government schemes tailored for you
           </p>
         </div>
 

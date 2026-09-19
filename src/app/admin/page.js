@@ -7,18 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import AdminHeader from "@/components/AdminHeader";
 import { getSchemes } from "@/lib/schemes";
 import { getAllApplications } from "@/lib/applications";
-import {
-  Layers,
-  FileText,
-  PlusCircle,
-  Clock,
-  CheckCircle2,
-  Users,
-  ShieldCheck,
-  ArrowRight,
-  TrendingUp,
-  AlertCircle,
-} from "lucide-react";
+import {Layers,FileText,PlusCircle,Clock,CheckCircle2,Users,ShieldCheck,ArrowRight,Tr,endingUpAlertCircle} from "lucide-react";
 
 export default function AdminDashboardPage() {
   const { profile } = useAuth();
@@ -31,7 +20,7 @@ export default function AdminDashboardPage() {
       try {
         const [schemesData, appsData] = await Promise.all([
           getSchemes().catch(() => []),
-          getAllApplications().catch(() => []),
+          getAllApplications().catch(() => [])
         ]);
         setSchemes(schemesData);
         setApplications(appsData);
@@ -45,9 +34,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   const activeSchemesCount = schemes.filter((s) => s.status === "active").length;
-  const pendingAppsCount = applications.filter(
-    (a) => (a.status || "Pending") === "Pending"
-  ).length;
+  const pendingAppsCount = applications.filter((a) => (a.status || "Pending") === "Pending").length;
   const approvedAppsCount = applications.filter((a) => a.status === "Approved").length;
 
   return (
@@ -55,7 +42,7 @@ export default function AdminDashboardPage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
         <AdminHeader
           title="Administrator Dashboard"
-          subtitle={`Logged in as ${profile?.name || "Officer"} • Directorate of Welfare Operations`}
+          subtitle={`Logged in as ${profile?.name || "Officer"}`}
         />
 
         {/* Quick Stats Grid */}

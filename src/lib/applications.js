@@ -1,132 +1,56 @@
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  serverTimestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import {addDoc,collection,doc,getDoc,getDocs,query,serverTimestamp,updateDoc,where} from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
 
-
 // Create a new application
-export async function createApplication(
-  applicationData
-) {
+export async function createApplication(applicationData) {
   try {
-    const applicationsRef =
-      collection(
-        db,
-        "applications"
-      );
-
-    const application = {
-      ...applicationData,
-
+    const applicationsRef =collection(db,"applications");
+    const application = {...applicationData,
       status: "Pending",
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp()};
 
-      createdAt:
-        serverTimestamp(),
-
-      updatedAt:
-        serverTimestamp(),
-    };
-
-    const applicationRef =
-      await addDoc(
-        applicationsRef,
-        application
-      );
-
+    const applicationRef =await addDoc(applicationsRef,application);
     return applicationRef.id;
 
   } catch (error) {
 
-    console.error(
-      "Error creating application:",
-      error
-    );
-
+    console.error("Error creating application:",error);
     throw error;
   }
 }
 
-
 // Check whether a user has already applied
-export async function hasUserApplied(
-  uid,
-  schemeId
-) {
+export async function hasUserApplied(uid,schemeId) {
   try {
 
     const applicationsRef =
-      collection(
-        db,
-        "applications"
-      );
-
-    const q = query(
-      applicationsRef,
-
-      where(
-        "userId",
-        "==",
-        uid
-      ),
-
-      where(
-        "schemeId",
-        "==",
-        schemeId
-      )
+      collection(db,"applications");
+    const q = query(applicationsRef,
+      where("userId","==",uid),
+      where("schemeId","==",schemeId)
     );
 
-    const snapshot =
-      await getDocs(q);
-
+    const snapshot = await getDocs(q);
     return !snapshot.empty;
 
   } catch (error) {
 
-    console.error(
-      "Error checking existing application:",
-      error
-    );
+    console.error( "Error checking existing application:",error);
 
     throw error;
   }
 }
 
-
 // Get all applications belonging to a user
-export async function getUserApplications(
-  uid
-) {
+export async function getUserApplications(uid) {
   try {
+    const applicationsRef =collection(db,"applications");
+    const q = query(applicationsRef,
+      where("userId","==",uid));
 
-    const applicationsRef =
-      collection(
-        db,
-        "applications"
-      );
-
-    const q = query(
-      applicationsRef,
-
-      where(
-        "userId",
-        "==",
-        uid
-      )
-    );
-
-    const snapshot =
-      await getDocs(q);
-
+    const snapshot = await getDocs(q);
     return snapshot.docs.map(
       (applicationDoc) => ({
         id: applicationDoc.id,
@@ -136,37 +60,20 @@ export async function getUserApplications(
 
   } catch (error) {
 
-    console.error(
-      "Error getting user applications:",
-      error
-    );
-
+    console.error("Error getting user applications:",error);
     throw error;
   }
 }
 
-
 // Get one application by ID
-export async function getApplicationById(
-  id
-) {
+export async function getApplicationById(id) {
   try {
-
     if (!id) {
       return null;
     }
 
-    const applicationRef =
-      doc(
-        db,
-        "applications",
-        id
-      );
-
-    const snapshot =
-      await getDoc(
-        applicationRef
-      );
+    const applicationRef =doc(db,"applications",id);
+    const snapshot =await getDoc(applicationRef);
 
     if (!snapshot.exists()) {
       return null;
@@ -179,35 +86,17 @@ export async function getApplicationById(
 
   } catch (error) {
 
-    console.error(
-      "Error getting application:",
-      error
-    );
-
+    console.error("Error getting application:",error);
     throw error;
   }
 }
 
-
-// =====================================================
-// ADMIN FUNCTIONS
-// =====================================================
-
-
 // Get all applications
 export async function getAllApplications() {
   try {
+    const applicationsRef =collection(db,"applications");
 
-    const applicationsRef =
-      collection(
-        db,
-        "applications"
-      );
-
-    const snapshot =
-      await getDocs(
-        applicationsRef
-      );
+    const snapshot =await getDocs(applicationsRef);
 
     return snapshot.docs.map(
       (applicationDoc) => ({
@@ -218,90 +107,46 @@ export async function getAllApplications() {
 
   } catch (error) {
 
-    console.error(
-      "Error getting all applications:",
-      error
-    );
+    console.error("Error getting all applications:",error);
 
     throw error;
   }
 }
 
-
 // Update application status
-export async function updateApplicationStatus(
-  applicationId,
-  status,
-  rejectionReason = ""
-) {
+export async function updateApplicationStatus(applicationId,status,rejectionReason = "") {
   try {
-
     if (!applicationId) {
-      throw new Error(
-        "Application ID is required."
-      );
+      throw new Error("Application ID is required.");
     }
 
 
-    const allowedStatuses = [
-      "Pending",
-      "Under Review",
-      "Approved",
-      "Rejected",
-    ];
+    const allowedStatuses = ["Pending","Under Review","Approved","Rejected",];
 
 
-    if (
-      !allowedStatuses.includes(
-        status
-      )
-    ) {
-      throw new Error(
-        "Invalid application status."
-      );
+    if (!allowedStatuses.includes(status)) {
+      throw new Error("Invalid application status.");
     }
 
 
-    if (
-      status === "Rejected" &&
-      !rejectionReason.trim()
-    ) {
-      throw new Error(
-        "A rejection reason is required."
-      );
+    if (status === "Rejected" &&!rejectionReason.trim()) {
+      throw new Error("A rejection reason is required.");
     }
 
 
-    const applicationRef =
-      doc(
-        db,
-        "applications",
-        applicationId
-      );
+    const applicationRef =doc(db,"applications",applicationId);
 
 
-    await updateDoc(
-      applicationRef,
+    await updateDoc(applicationRef,
       {
-        status,
-
-        rejectionReason:
-          status === "Rejected"
-            ? rejectionReason.trim()
-            : "",
-
-        updatedAt:
-          serverTimestamp(),
+      status,
+      rejectionReason:status === "Rejected"? rejectionReason.trim(): "",
+      updatedAt:serverTimestamp(),
       }
     );
 
   } catch (error) {
-
-    console.error(
-      "Error updating application status:",
-      error
-    );
-
+    console.error("Error updating application status:",error);
     throw error;
   }
 }
